@@ -20,3 +20,48 @@
     }
   </style>
 </head>
+<body>
+  <div id="container"></div>
+
+  <script>
+    const FILE_BASE = "https://raw.githubusercontent.com/newzaki/vis/main/media/img"; // no extension
+
+    function loadMedia() {
+      const container = document.getElementById("container");
+      container.innerHTML = "";
+
+      // Try video first
+      const video = document.createElement("video");
+      video.src = FILE_BASE + ".mp4?nocache=" + Date.now();
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+
+      video.onerror = () => {
+        // If video doesn't exist, show image
+        const img = document.createElement("img");
+        img.src = FILE_BASE + ".jpg?nocache=" + Date.now();
+        container.appendChild(img);
+      };
+
+      video.oncanplay = () => {
+        container.appendChild(video);
+      };
+    }
+
+    loadMedia();
+    setInterval(loadMedia, 30000); // refresh every 30s
+
+    // Fullscreen toggle
+    document.body.addEventListener("click", () => {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+        else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    });
+  </script>
+</body>
+</html>
