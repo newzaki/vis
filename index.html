@@ -31,9 +31,10 @@
 
       // try image first
       let img = new Image();
-      img.src = FILE_URL + ".jpg?nocache=" + Date.now();
+      img.src = FILE_URL + ".jpg";
       img.onload = () => {
         container.innerHTML = "";
+vis/
         container.appendChild(img);
       };
 
