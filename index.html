@@ -6,55 +6,62 @@
   <style>
     body {
       margin: 0;
-      background: rgb(255, 255, 255);
+      background: black;
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100vh;
+      overflow: hidden;
     }
     img, video {
-      max-width: 100%;
-      max-height: 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: fill; /* fills screen */
     }
   </style>
 </head>
 <body>
-  <div id="content"></div>
+  <div id="container"></div>
 
   <script>
-    const FILE_URL = "https://raw.githubusercontent.com/newzaki/vis/main/media/img"; 
-    // no extension on purpose
+    const FILE_BASE = "https://raw.githubusercontent.com/newzaki/vis/main/media/img"; // no extension
 
-    async function loadContent() {
-      let container = document.getElementById("content");
+    function loadMedia() {
+      const container = document.getElementById("container");
       container.innerHTML = "";
 
-      // try image first
-      let img = new Image();
-      img.src = FILE_URL + ".jpg";
-      img.onload = () => {
-        container.innerHTML = "";
-vis/
+      // Try video first
+      const video = document.createElement("video");
+      video.src = FILE_BASE + ".mp4?nocache=" + Date.now();
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+
+      video.onerror = () => {
+        // If video doesn't exist, show image
+        const img = document.createElement("img");
+        img.src = FILE_BASE + ".jpg?nocache=" + Date.now();
         container.appendChild(img);
       };
 
-      // try video fallback
-      img.onerror = () => {
-        let vid = document.createElement("video");
-        vid.src = FILE_URL + ".mp4?nocache=" + Date.now();
-        vid.autoplay = true;
-        vid.loop = true;
-        vid.controls = false;
-        vid.muted = true;
-        vid.oncanplay = () => {
-          container.innerHTML = "";
-          container.appendChild(vid);
-        };
+      video.oncanplay = () => {
+        container.appendChild(video);
       };
     }
 
-    loadContent();
-    setInterval(loadContent, 30000); // refresh every 30s
+    loadMedia();
+    setInterval(loadMedia, 30000); // refresh every 30s
+
+    // Fullscreen toggle
+    document.body.addEventListener("click", () => {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+        else if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    });
   </script>
 </body>
 </html>
